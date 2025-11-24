@@ -25,14 +25,6 @@ class DataItem:
     def __repr__(self):
         return self.movie_name
         
-class DataItemEntry:
-    def __init__(self, item):
-        self.item = item
-        self.next = None
-        
-    def __repr__(self):
-        return f"{self.item} -> {self.next}"
-        
 class HashTable:
     def __init__(self, length):
         self.ls = [None] * length
@@ -45,19 +37,19 @@ class HashTable:
         if self.ls[index]:
             self.resolveCollision(item, index)
         else:
-            self.ls[index] = DataItemEntry(item)
+            self.ls[index] = item
             self.unused -= 1
             
     def resolveCollision(self, item, index):
         self.collisions += 1
-        current = self.ls[index]
-        while current.next != None:
-            current = current.next
-        current.next = DataItemEntry(item)
+        while self.ls[index]:
+            index = (index + 1) % self.length
+        self.ls[index] = item
+        self.unused -= 1
             
 
 def main():
-    length = 10000
+    length = 20000
     name_hashtable = HashTable(length)
     quote_hashtable = HashTable(length)
     items = []
@@ -77,7 +69,7 @@ def main():
         quote_hashtable.add(item, item.quote)
     quote_end_time = time.time()
         
-    print("Statistics (Rolling Polynomial Hash):")
+    print("Statistics (Linear Probing):")
     print("Movie Name Hash Table")
     print(f" Collisions: {name_hashtable.collisions}")
     print(f" Unused Buckets: {name_hashtable.unused}")
