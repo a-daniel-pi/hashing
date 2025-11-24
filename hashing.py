@@ -3,9 +3,11 @@
 import csv, time
 
 def getHash(string):
+    p = 10067
+    a = 2
     result = 0
-    for i in string:
-        result += ord(i)
+    for n, i in enumerate(string):
+        result += ord(i)*pow(a, n, p)
     return result
 
 class DataItem:
@@ -75,7 +77,7 @@ def main():
         quote_hashtable.add(item, item.quote)
     quote_end_time = time.time()
         
-    print("Statistics:")
+    print("Statistics (Rolling Polynomial Hash):")
     print("Movie Name Hash Table")
     print(f" Collisions: {name_hashtable.collisions}")
     print(f" Unused Buckets: {name_hashtable.unused}")
@@ -84,7 +86,6 @@ def main():
     print(f" Collisions: {quote_hashtable.collisions}")
     print(f" Unused Buckets: {quote_hashtable.unused}")
     print(f" Time Taken: {quote_end_time-quote_start_time}")
-    
         
 if __name__ == '__main__':
     main()
