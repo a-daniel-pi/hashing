@@ -41,12 +41,11 @@ class HashTable:
             self.unused -= 1
             
     def resolveCollision(self, item, index):
-        self.collisions += 1
         while self.ls[index]:
+            self.collisions += 1
             index = (index + 1) % self.length
         self.ls[index] = item
         self.unused -= 1
-            
 
 def main():
     length = 20000
@@ -73,11 +72,11 @@ def main():
     print("Movie Name Hash Table")
     print(f" Collisions: {name_hashtable.collisions}")
     print(f" Unused Buckets: {name_hashtable.unused}")
-    print(f" Time Taken: {name_end_time-name_start_time}")
+    print(f" Time Taken: {name_end_time-name_start_time}s")
     print("Quote Hash Table")
     print(f" Collisions: {quote_hashtable.collisions}")
     print(f" Unused Buckets: {quote_hashtable.unused}")
-    print(f" Time Taken: {quote_end_time-quote_start_time}")
+    print(f" Time Taken: {quote_end_time-quote_start_time}s")
         
 if __name__ == '__main__':
     main()
