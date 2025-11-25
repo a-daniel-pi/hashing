@@ -2,10 +2,18 @@
 
 import csv, time
 
-def getHash(string):
+def djb2Hash(string):
     result = 5381
     for n, i in enumerate(string):
         result = (result * 33 + ord(i))%(2**31-1)
+    return result
+
+def rollingHash(string):
+    p = 10067
+    a = 2
+    result = 0
+    for n, i in enumerate(string):
+        result += ord(i)*pow(a, n, p)
     return result
 
 class DataItem:
@@ -39,23 +47,25 @@ class HashTable:
         self.unused = length
         
     def add(self, item, key):
-        index = getHash(key)%self.length
+        index = djb2Hash(key)%self.length
         if self.ls[index]:
-            self.resolveCollision(item, index)
+            self.resolveCollision(item, index, key)
         else:
-            self.ls[index] = DataItemEntry(item)
+            self.ls[index] = item
             self.unused -= 1
             
-    def resolveCollision(self, item, index):
-        self.collisions += 1
-        current = self.ls[index]
-        while current.next != None:
-            current = current.next
-        current.next = DataItemEntry(item)
+    def resolveCollision(self, item, index, key):
+        current = index
+        hash = rollingHash(key)
+        while self.ls[current]:
+            self.collisions += 1
+            current = (current+hash)%(len(self.ls)-1)
+        self.ls[current] = item
+        self.unused -= 1
             
 
 def main():
-    length = 10000
+    length = 20000
     name_hashtable = HashTable(length)
     quote_hashtable = HashTable(length)
     items = []
@@ -75,7 +85,7 @@ def main():
         quote_hashtable.add(item, item.quote)
     quote_end_time = time.time()
         
-    print("Statistics (djb2 Hash Function):")
+    print("Statistics (Double Hashing):")
     print("Movie Name Hash Table")
     print(f" Collisions: {name_hashtable.collisions}")
     print(f" Unused Buckets: {name_hashtable.unused}")
